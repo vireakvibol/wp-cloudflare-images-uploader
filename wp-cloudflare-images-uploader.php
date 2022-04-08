@@ -30,6 +30,7 @@ if (!defined('ABSPATH')) {
 }
 
 register_activation_hook(__FILE__, 'activate');
+
 function activate()
 {
   add_option('wp_cloudflare_images_uploader_enable', false);
@@ -43,7 +44,28 @@ class WP_CLOUDFLARE_IMAGES_UPLOADER
   public function __construct()
   {
     add_action('admin_init', array($this, 'admin_init'));
+    add_filter('wp_handle_upload', array($this, 'wp_handle_upload'), 'upload');
+  }
+
+  public function wp_handle_upload($file)
+  {
+    if (get_option('wp_cloudflare_images_uploader_enable'))
+    {
+
+      $ch = curl_init('https://api.cloudflare.com/client/v4/accounts/' . get_option('wp_cloudflare_images_uploader_account_id') . '/images/v2/direct_upload');
+
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Authorization: Bearer ' . get_option('wp_cloudflare_images_uploader_token')));
+      curl_setopt($ch, CURLOPT_POSTFIELDS, array(
+        'requireSignedURLs' => true,
+        'metadata' => '{"key":"value"}'
+      ));
+
+      $result = curl_exec($ch);
+      return $result;
+      curl_close($ch);
+    }
     
+    return $file;
   }
 
   public static function init()
@@ -53,6 +75,17 @@ class WP_CLOUDFLARE_IMAGES_UPLOADER
 
   public function admin_init()
   {
+
+    register_setting('media', 'wp_cloudflare_images_uploader_enable', array(
+      'type' => 'boolean'
+    ));
+    register_setting('media', 'wp_cloudflare_images_uploader_account_id', array(
+      'type' => 'string'
+    ));
+    register_setting('media', 'wp_cloudflare_images_uploader_token', array(
+      'type' => 'string'
+    ));
+
     add_settings_section(
       'wp_cloudflare_images_uploader_setting_section',
       'Connect to Cloudflare pages',
@@ -61,9 +94,13 @@ class WP_CLOUDFLARE_IMAGES_UPLOADER
     );
     function wp_cloudflare_images_uploader_setting_section_callback_function( $arg )
     {
-      echo '<label for="' . $arg['id'] .'_enable">';
-      echo '<input id="' . $arg['id'] .'_enable" type="checkbox" value="" /> Enable Cloudflare Images Uploader';
-      echo '</label>';
+      $option = get_option('wp_cloudflare_images_uploader_enable', '');
+      ?>
+
+      <label for="<?php $arg['id'] ?>'_enable">
+      <input id="<?php $arg['id'] ?>'_enable" name="wp_cloudflare_images_uploader_enable" type="checkbox" value="1" <?php checked($option); ?> /> Enable Cloudflare Images Uploader
+      </label>
+      <?php
     }
 
     add_settings_field(
@@ -75,7 +112,10 @@ class WP_CLOUDFLARE_IMAGES_UPLOADER
     );
     function wp_cloudflare_images_uploader_setting_field_account_id_callback_function()
     {
-      echo '<input style="width: 350px;" type="text" />';
+      $option = get_option('wp_cloudflare_images_uploader_account_id', '');
+      ?>
+      <input style="width: 350px;" type="text" name="wp_cloudflare_images_uploader_account_id" value="<?php echo $option; ?>" />
+      <?php
     }
     add_settings_field(
       'wp_cloudflare_images_uploader_setting_field_token',
@@ -86,7 +126,10 @@ class WP_CLOUDFLARE_IMAGES_UPLOADER
     );
     function wp_cloudflare_images_uploader_setting_field_token_callback_function()
     {
-      echo '<input style="width: 350px;" type="password" />';
+      $option = get_option('wp_cloudflare_images_uploader_token', '');
+      ?>
+      <input style="width: 350px;" type="password" name="wp_cloudflare_images_uploader_token" value="<?php echo $option; ?>" />
+      <?php
     }
   }
   
