@@ -29,17 +29,65 @@ if (!defined('ABSPATH')) {
   die('Do not open this file directly.');
 }
 
+register_activation_hook(__FILE__, 'activate');
+function activate()
+{
+  add_option('wp_cloudflare_images_uploader_enable', false);
+  add_option('wp_cloudflare_images_uploader_account_id', false);
+  add_option('wp_cloudflare_images_uploader_token', false);
+}
+
 class WP_CLOUDFLARE_IMAGES_UPLOADER
 {
 
   public function __construct()
   {
-    // add_action('admin_menus', array($this, 'add_admin_menu'));
+    add_action('admin_init', array($this, 'admin_init'));
+    
   }
 
   public static function init()
   {
     new self();
+  }
+
+  public function admin_init()
+  {
+    add_settings_section(
+      'wp_cloudflare_images_uploader_setting_section',
+      'Connect to Cloudflare pages',
+      'wp_cloudflare_images_uploader_setting_section_callback_function',
+      'media'
+    );
+    function wp_cloudflare_images_uploader_setting_section_callback_function( $arg )
+    {
+      echo '<label for="' . $arg['id'] .'_enable">';
+      echo '<input id="' . $arg['id'] .'_enable" type="checkbox" value="" /> Enable Cloudflare Images Uploader';
+      echo '</label>';
+    }
+
+    add_settings_field(
+      'wp_cloudflare_images_uploader_setting_field_account_id',
+      'Account ID',
+      'wp_cloudflare_images_uploader_setting_field_account_id_callback_function',
+      'media',
+      'wp_cloudflare_images_uploader_setting_section'
+    );
+    function wp_cloudflare_images_uploader_setting_field_account_id_callback_function()
+    {
+      echo '<input style="width: 350px;" type="text" />';
+    }
+    add_settings_field(
+      'wp_cloudflare_images_uploader_setting_field_token',
+      'Token',
+      'wp_cloudflare_images_uploader_setting_field_token_callback_function',
+      'media',
+      'wp_cloudflare_images_uploader_setting_section'
+    );
+    function wp_cloudflare_images_uploader_setting_field_token_callback_function()
+    {
+      echo '<input style="width: 350px;" type="password" />';
+    }
   }
   
 }
