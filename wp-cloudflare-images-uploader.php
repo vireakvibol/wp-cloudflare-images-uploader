@@ -138,9 +138,6 @@ class WP_CLOUDFLARE_IMAGES_UPLOADER
     register_setting('media', 'wp_cloudflare_images_uploader_account_id', array(
       'type' => 'string'
     ));
-    register_setting('media', 'wp_cloudflare_images_uploader_key', array(
-      'type' => 'string'
-    ));
     register_setting('media', 'wp_cloudflare_images_uploader_token', array(
       'type' => 'string'
     ));
@@ -189,21 +186,6 @@ class WP_CLOUDFLARE_IMAGES_UPLOADER
       $option = get_option('wp_cloudflare_images_uploader_token', '');
       ?>
       <input style="width: 350px;" type="password" name="wp_cloudflare_images_uploader_token" value="<?php echo $option; ?>" />
-      <?php
-    }
-
-    add_settings_field(
-      'wp_cloudflare_images_uploader_setting_field_key',
-      'Cloudflare Images Key',
-      'wp_cloudflare_images_uploader_setting_field_key_callback_function',
-      'media',
-      'wp_cloudflare_images_uploader_setting_section'
-    );
-    function wp_cloudflare_images_uploader_setting_field_key_callback_function()
-    {
-      $option = get_option('wp_cloudflare_images_uploader_key', '');
-      ?>
-      <input style="width: 350px;" type="password" name="wp_cloudflare_images_uploader_key" value="<?php echo $option; ?>" />
       <?php
     }
 
