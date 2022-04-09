@@ -56,11 +56,69 @@ class WP_CLOUDFLARE_IMAGES_UPLOADER
       curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
       $result = curl_exec($ch);
+
       if (curl_errno($ch)) {
           // echo 'Error:' . curl_error($ch);
           return curl_error($ch);
       }
       curl_close($ch);
+
+      $result_decode = json_decode($result, true)['result'];
+
+      $attachment_id = wp_insert_attachment(array(
+        'guid' => $result_decode['variants'][0],
+        'post_mime_type' => $file['type'],
+        'post_title' => sanitize_title(pathinfo($file['name'])['filename']),
+      ));
+
+      $attachment_metadata = array(
+        'width' => 200,
+        'height' => 400,
+        'file' => wp_basename($file['name']),
+        'sizes' => $file['size']
+      );
+      $attachment_metadata['sizes'] = array( 'full' => $attachment_metadata );
+
+      wp_update_attachment_metadata($attachment_id, $attachment_metadata);
+
+      // return wp_send_json(array(
+      //   'success' => true,
+      //   'id' => $attachment_id,
+      // ));
+      return wp_send_json(array(
+        'success' => true,
+        'data' => array(
+          'id' => $attachment_id,
+          'title' => sanitize_title(pathinfo($file['name'])['filename']),
+          'filename' => wp_basename($file['name']),
+          'url' => $result_decode['variants'][0],
+          'alt' => '',
+          'author' => get_current_user_id(),
+          'description' => '',
+          'caption' => '',
+          'name' => sanitize_title(pathinfo($file['name'])['filename']),
+          'status' => 'inherit',
+          'uploadedTo' => 0,
+          'date' => time() . 000,
+          'modified' => time() . 000,
+          'menuOrder' => 0,
+          'mime' => $file['type'],
+          'type' => 'image',
+          'subtype' => '',
+          'icon' => '',
+          'dateFormatted' => date('M d Y'),
+          'editLink' => get_admin_url() . 'post.php?post=' . $attachment_id . '&action=edit',
+          'meta' => false,
+          'authorName' => get_userdata(get_current_user_id())->display_name,
+          'authorLink' => get_author_posts_url(get_current_user_id()),
+          'filesizeInBytes' => $file['size'],
+          'filesizeHumanReadable' => size_format($file['size'], 2),
+          'context' => '',
+          'width' => 200,
+          'height' => 400,
+          'orientation' => 'landscape',
+        )
+      ));
     }
 
     return $file;
