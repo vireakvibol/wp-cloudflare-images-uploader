@@ -1,8 +1,8 @@
 <?php
 
 // Check that the file is not accessed directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( 'We\'re sorry, but you can not directly access this file.' );
+if (!defined('ABSPATH')) {
+  die('We\'re sorry, but you can not directly access this file.');
 }
 
 /**
@@ -12,31 +12,97 @@ class WP_Cloudflare_Images_Uploader
 {
 
   /**
-	 * WP Class WP Cloudflare Images Uploader constructor.
-	 *
-	 * @uses Health_Check::init()
-	 *
-	 * @return void
-	 */
+   * WP Class WP Cloudflare Images Uploader constructor.
+   *
+   * @uses Health_Check::init()
+   *
+   * @return void
+   */
   public function __construct()
   {
     $this->init();
   }
 
   /**
-	 * Plugin initiation.
-	 *
-	 * A helper function, called by `WP_Cloudflare_Images_Uploader::__construct()` to initiate actions, hooks and other features needed.
-	 *
-	 * @uses add_action()
-	 * @uses add_filter()
-	 *
-	 * @return void
-	 */
+   * Plugin initiation.
+   *
+   * A helper function, called by `WP_Cloudflare_Images_Uploader::__construct()` to initiate actions, hooks and other features needed.
+   *
+   * @uses add_action()
+   * @uses add_filter()
+   *
+   * @return void
+   */
   private function init()
   {
     add_action('admin_init', array($this, 'admin_init'));
+
+    add_filter('plugin_action_links_'. plugin_basename(WP_CLOUDFLARE_IMAGES_UPLOADER_CHECK_PLUGIN_FILE), array($this, 'plugin_action_link'));
     add_filter('wp_handle_upload_prefilter', array($this, 'wp_handle_upload_prefilter'), 'upload');
+  }
+
+  public function admin_init()
+  {
+    register_setting('media', 'wp_cloudflare_images_uploader_account_id', array(
+      'type' => 'string'
+    ));
+    register_setting('media', 'wp_cloudflare_images_uploader_token', array(
+      'type' => 'string'
+    ));
+
+    add_settings_section(
+      'wp_cloudflare_images_uploader_setting_section',
+      'Connect to Cloudflare Images',
+      '',
+      'media'
+    );
+
+    add_settings_field(
+      'wp_cloudflare_images_uploader_setting_field_account_id',
+      'Account ID',
+      'wp_cloudflare_images_uploader_setting_field_account_id_callback_function',
+      'media',
+      'wp_cloudflare_images_uploader_setting_section'
+    );
+    function wp_cloudflare_images_uploader_setting_field_account_id_callback_function()
+    {
+      $option = get_option('wp_cloudflare_images_uploader_account_id', '');
+?>
+      <input style="width: 350px;" type="text" name="wp_cloudflare_images_uploader_account_id" value="<?php echo $option; ?>" />
+    <?php
+    }
+
+    add_settings_field(
+      'wp_cloudflare_images_uploader_setting_field_token',
+      'Account API Token',
+      'wp_cloudflare_images_uploader_setting_field_token_callback_function',
+      'media',
+      'wp_cloudflare_images_uploader_setting_section'
+    );
+    function wp_cloudflare_images_uploader_setting_field_token_callback_function()
+    {
+      $option = get_option('wp_cloudflare_images_uploader_token', '');
+    ?>
+      <input style="width: 350px;" type="password" name="wp_cloudflare_images_uploader_token" value="<?php echo $option; ?>" />
+<?php
+    }
+  }
+
+  /**
+   * Add settings link to plugin actions
+   *
+   * @param  array  $plugin_actions
+   * @param  string $plugin_file
+   * @since  1.0
+   * @return array
+   */
+  public function plugin_action_link($actions)
+  {
+
+    $link = '<a href="' . admin_url('/options-media.php') . '">Settings</a>';
+    array_unshift($actions, $link);
+
+    return $actions;
   }
 
   public function wp_handle_upload_prefilter($file)
@@ -56,8 +122,8 @@ class WP_Cloudflare_Images_Uploader
     $result = curl_exec($ch);
 
     if (curl_errno($ch)) {
-        // echo 'Error:' . curl_error($ch);
-        return curl_error($ch);
+      // echo 'Error:' . curl_error($ch);
+      return curl_error($ch);
     }
     curl_close($ch);
 
@@ -75,7 +141,7 @@ class WP_Cloudflare_Images_Uploader
       'file' => wp_basename($file['name']),
       'sizes' => $file['size']
     );
-    $attachment_metadata['sizes'] = array( 'full' => $attachment_metadata );
+    $attachment_metadata['sizes'] = array('full' => $attachment_metadata);
 
     wp_update_attachment_metadata($attachment_id, $attachment_metadata);
 
@@ -118,53 +184,4 @@ class WP_Cloudflare_Images_Uploader
       )
     ));
   }
-
-  public function admin_init()
-  {
-    register_setting('media', 'wp_cloudflare_images_uploader_account_id', array(
-      'type' => 'string'
-    ));
-    register_setting('media', 'wp_cloudflare_images_uploader_token', array(
-      'type' => 'string'
-    ));
-
-    add_settings_section(
-      'wp_cloudflare_images_uploader_setting_section',
-      'Connect to Cloudflare Images',
-      '',
-      'media'
-    );
-
-    add_settings_field(
-      'wp_cloudflare_images_uploader_setting_field_account_id',
-      'Account ID',
-      'wp_cloudflare_images_uploader_setting_field_account_id_callback_function',
-      'media',
-      'wp_cloudflare_images_uploader_setting_section'
-    );
-    function wp_cloudflare_images_uploader_setting_field_account_id_callback_function()
-    {
-      $option = get_option('wp_cloudflare_images_uploader_account_id', '');
-      ?>
-      <input style="width: 350px;" type="text" name="wp_cloudflare_images_uploader_account_id" value="<?php echo $option; ?>" />
-      <?php
-    }
-
-    add_settings_field(
-      'wp_cloudflare_images_uploader_setting_field_token',
-      'Account API Token',
-      'wp_cloudflare_images_uploader_setting_field_token_callback_function',
-      'media',
-      'wp_cloudflare_images_uploader_setting_section'
-    );
-    function wp_cloudflare_images_uploader_setting_field_token_callback_function()
-    {
-      $option = get_option('wp_cloudflare_images_uploader_token', '');
-      ?>
-      <input style="width: 350px;" type="password" name="wp_cloudflare_images_uploader_token" value="<?php echo $option; ?>" />
-      <?php
-    }
-
-  }
-  
 }

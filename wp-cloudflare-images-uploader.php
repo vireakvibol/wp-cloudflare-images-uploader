@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: WP Cloudflare Images Uploader
  * Plugin URI: https://github.com/softlibrary/wc-subscription
@@ -25,12 +26,15 @@
  */
 
 // Check that the file is not accessed directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( 'We\'re sorry, but you can not directly access this file.' );
+if (!defined('ABSPATH')) {
+	die('We\'re sorry, but you can not directly access this file.');
 }
 
+// Set the plugin file.
+define('WP_CLOUDFLARE_IMAGES_UPLOADER_CHECK_PLUGIN_FILE', __FILE__);
+
 // Include class-files used by our plugin.
-require( dirname( __FILE__ ) . '/includes/class-wp-cloudflare-images-uploader.php' );
+require(dirname(__FILE__) . '/includes/class-wp-cloudflare-images-uploader.php');
 
 // Initialize our plugin.
 new WP_Cloudflare_Images_Uploader();
