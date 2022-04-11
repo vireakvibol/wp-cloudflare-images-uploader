@@ -137,23 +137,44 @@ class WP_Cloudflare_Images_Uploader
       'post_title' => sanitize_title(pathinfo($file['name'])['filename']),
     ));
 
+    $image_resolution = getimagesize($file['tmp_name']);
+
     $attachment_metadata = array(
-      'width' => 200,
-      'height' => 400,
+      'width' => $image_resolution[0],
+      'height' => $image_resolution[1],
       'file' => wp_basename($file['name']),
       'sizes' => $file['size'],
       'image_meta' => array(
         'id' => $result_decode['id']
       )
     );
-    $attachment_metadata['sizes'] = array('full' => $attachment_metadata);
+
+    $image_size = array('full', $attachment_metadata);
+    $attachment_metadata['sizes'] = $image_size;
 
     wp_update_attachment_metadata($attachment_id, $attachment_metadata);
 
-    // return wp_send_json(array(
-    //   'success' => true,
-    //   'id' => $attachment_id,
-    // ));
+    $type = array(
+      'gif',
+      'jpeg',
+      'png',
+      'swf',
+      'psd',
+      'bmp',
+      'tiff_ii',
+      'tiff_mm',
+      'jpc',
+      'jp2',
+      'jpx',
+      'jb2',
+      'swc',
+      'iff',
+      'wbmp',
+      'xbm',
+      'ico',
+      'webp',
+    );
+
     return wp_send_json(array(
       'success' => true,
       'data' => array(
@@ -173,7 +194,7 @@ class WP_Cloudflare_Images_Uploader
         'menuOrder' => 0,
         'mime' => $file['type'],
         'type' => 'image',
-        'subtype' => '',
+        'subtype' => $type[exif_imagetype($file['tmp_name'])],
         'icon' => '',
         'dateFormatted' => date('M d Y'),
         'editLink' => get_admin_url() . 'post.php?post=' . $attachment_id . '&action=edit',
@@ -183,8 +204,13 @@ class WP_Cloudflare_Images_Uploader
         'filesizeInBytes' => $file['size'],
         'filesizeHumanReadable' => size_format($file['size'], 2),
         'context' => '',
-        'width' => 200,
-        'height' => 400,
+        'compat' => array(
+          'item' => '',
+          'meta' => ''
+        ),
+        'sizes' => $image_size,
+        'width' => $image_resolution[0],
+        'height' => $image_resolution[1],
         'orientation' => 'landscape',
       )
     ));
