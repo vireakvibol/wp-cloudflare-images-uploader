@@ -39,6 +39,8 @@ class WP_Cloudflare_Images_Uploader
 
     add_filter('plugin_action_links_'. plugin_basename(WP_CLOUDFLARE_IMAGES_UPLOADER_CHECK_PLUGIN_FILE), array($this, 'plugin_action_link'));
     add_filter('wp_handle_upload_prefilter', array($this, 'wp_handle_upload_prefilter'), 'upload');
+
+    add_action('delete_attachment', array($this, 'delete_attachment'), 10, 1);
   }
 
   public function admin_init()
@@ -139,7 +141,10 @@ class WP_Cloudflare_Images_Uploader
       'width' => 200,
       'height' => 400,
       'file' => wp_basename($file['name']),
-      'sizes' => $file['size']
+      'sizes' => $file['size'],
+      'image_meta' => array(
+        'id' => $result_decode['id']
+      )
     );
     $attachment_metadata['sizes'] = array('full' => $attachment_metadata);
 
@@ -184,4 +189,28 @@ class WP_Cloudflare_Images_Uploader
       )
     ));
   }
+
+  public function delete_attachment($attachment_id)
+  {
+
+    $ch = curl_init();
+
+    curl_setopt($ch, CURLOPT_URL, 'https://api.cloudflare.com/client/v4/accounts/' . get_option('wp_cloudflare_images_uploader_account_id') .'/images/v1/' . wp_get_attachment_metadata($attachment_id)['image_meta']['id']);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+
+
+    $headers = array();
+    $headers[] = 'Authorization: Bearer ' . get_option('wp_cloudflare_images_uploader_token');
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+    curl_exec($ch);
+    
+    if (curl_errno($ch)) {
+        echo 'Error:' . curl_error($ch);
+    }
+    curl_close($ch);
+
+  }
+
 }
