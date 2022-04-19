@@ -20,7 +20,12 @@ class WP_Cloudflare_Images_Uploader
    */
   public function __construct()
   {
-    $this->init();
+    add_action('admin_init', array($this, 'admin_init'));
+
+    add_filter('plugin_action_links_'. plugin_basename(WP_CLOUDFLARE_IMAGES_UPLOADER_CHECK_PLUGIN_FILE), array($this, 'plugin_action_link'));
+    add_filter('wp_handle_upload_prefilter', array($this, 'wp_handle_upload_prefilter'), 'upload');
+
+    add_action('delete_attachment', array($this, 'delete_attachment'), 10, 1);
   }
 
   /**
@@ -33,14 +38,9 @@ class WP_Cloudflare_Images_Uploader
    *
    * @return void
    */
-  private function init()
+  public static function init()
   {
-    add_action('admin_init', array($this, 'admin_init'));
-
-    add_filter('plugin_action_links_'. plugin_basename(WP_CLOUDFLARE_IMAGES_UPLOADER_CHECK_PLUGIN_FILE), array($this, 'plugin_action_link'));
-    add_filter('wp_handle_upload_prefilter', array($this, 'wp_handle_upload_prefilter'), 'upload');
-
-    add_action('delete_attachment', array($this, 'delete_attachment'), 10, 1);
+    new self();
   }
 
   public function admin_init()
