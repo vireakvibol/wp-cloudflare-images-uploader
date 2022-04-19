@@ -11,8 +11,7 @@
   Upload your media direct to Cloudflare Images and use it as media CDN.
   
   [![CodeFactor](https://www.codefactor.io/repository/github/softlibrary/wp-cloudflare-images-uploader/badge)](https://www.codefactor.io/repository/github/softlibrary/wp-cloudflare-images-uploader)
-  ![version](https://img.shields.io/badge/version-1.2.3-blue)
+  [![License](https://img.shields.io/github/license/softlibrary/wp-cloudflare-images-uploader?color=lighgreen)](https://github.com/softlibrary/wp-cloudflare-images-uploader/blob/main/LICENSE)
   [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=softlibrary_wp-cloudflare-images-uploader&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=softlibrary_wp-cloudflare-images-uploader)
-
   
 </div>
