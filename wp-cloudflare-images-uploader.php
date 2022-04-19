@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: WP Cloudflare Images Uploader
- * Plugin URI: https://github.com/softlibrary/wc-subscription
+ * Plugin URI: https://github.com/softlibrary/wc-cloudflare-images-uploader
  * Description: Upload your media direct to Cloudflare Images
  * Version: 0.1.0
  * Requires at least: 5.0
@@ -10,7 +10,7 @@
  * Tested up to: 8.1
  * Author: softlibrary
  * Author URI: https://softlibrary.org
- * Text Domain: wp-subscription
+ * Text Domain: wp-cloudflare-images-uploader
  * Copyright 2021  softlibrary  (email: contact@softlibrary.org)
  * 
  * This program is free software; you can redistribute it and/or modify
@@ -37,4 +37,4 @@ define('WP_CLOUDFLARE_IMAGES_UPLOADER_CHECK_PLUGIN_FILE', __FILE__);
 require(dirname(__FILE__) . '/includes/class-wp-cloudflare-images-uploader.php');
 
 // Initialize our plugin.
-new WP_Cloudflare_Images_Uploader();
+WP_Cloudflare_Images_Uploader::init();
