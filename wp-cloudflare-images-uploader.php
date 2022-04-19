@@ -37,4 +37,4 @@ define('WP_CLOUDFLARE_IMAGES_UPLOADER_CHECK_PLUGIN_FILE', __FILE__);
 require(dirname(__FILE__) . '/includes/class-wp-cloudflare-images-uploader.php');
 
 // Initialize our plugin.
-new WP_Cloudflare_Images_Uploader();
+WP_Cloudflare_Images_Uploader::init();
