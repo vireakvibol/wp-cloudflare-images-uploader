@@ -18,7 +18,7 @@
   
 </div>
 
-#### Minmum Requirement
+#### Minimum Requirement
 | Require | Version |
 |---|---|
 | Wordpress | 5.0.0 |
