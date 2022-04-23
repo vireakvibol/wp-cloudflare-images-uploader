@@ -138,6 +138,7 @@ class WP_Cloudflare_Images_Uploader
       'guid' => $image_url . '/large',
       'post_mime_type' => $file['type'],
       'post_title' => sanitize_title(pathinfo($file['name'])['filename']),
+      'url' => $image_url,
     ));
 
     $image_resolution = getimagesize($file['tmp_name']);
@@ -197,7 +198,7 @@ class WP_Cloudflare_Images_Uploader
         'id' => $attachment_id,
         'title' => sanitize_title(pathinfo($file['name'])['filename']),
         'filename' => wp_basename($file['name']),
-        'url' => $result_decode['variants'][0],
+        'url' => $image_url . '/large',
         'alt' => '',
         'author' => get_current_user_id(),
         'description' => '',
