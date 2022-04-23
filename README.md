@@ -17,3 +17,10 @@
   [![PHP Required](https://img.shields.io/badge/php-8.0-blue)](https://www.php.net/downloads)
   
 </div>
+
+#### Minmum Requirement
+| Require | Version |
+|---|---|
+| Wordpress | 5.0.0 |
+| PHP | 8.0 |
+| cURL | php_curl |
