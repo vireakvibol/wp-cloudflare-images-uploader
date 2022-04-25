@@ -14,7 +14,6 @@
   
 </div>
 
-
 <div align="center">
   
   ## Upload your media direct to Cloudflare Images and use it as media CDN.
