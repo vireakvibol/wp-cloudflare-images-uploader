@@ -27,3 +27,10 @@
 | Wordpress | 5.0.0 |
 | PHP | 8.0 |
 | cURL | php_curl |
+
+#### Development Sponsors
+
+<table style="text-align:center;"><tr>
+  <td><a href="https://cloud.billbox.me" target="_blank"><img src="https://sourceforge.net/p/softlibrary/svn/HEAD/tree/thirtparty-logos/billbox-logo-75x75.jpg?format=raw" height="75" valign="middle" /></a></td>
+  <td><a href="https://www.konexdigital.com" target="_blank"><img src="https://sourceforge.net/p/softlibrary/svn/HEAD/tree/thirtparty-logos/konex-digital-logo-302x75.jpg?format=raw" width="200" valign="middle" /></a></td>
+</tr></table>
