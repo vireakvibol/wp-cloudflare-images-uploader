@@ -131,10 +131,14 @@ class WP_Cloudflare_Images_Uploader
 
     $result_decode = json_decode($result, true)['result'];
 
+    $img_explode = explode('/', $result_decode['variants'][0]);
+    $image_url = $img_explode[0] . '//' . $img_explode[2] .'/'. $img_explode[3] .'/'. $img_explode[4];
+
     $attachment_id = wp_insert_attachment(array(
-      'guid' => $result_decode['variants'][0],
+      'guid' => $image_url . '/large',
       'post_mime_type' => $file['type'],
       'post_title' => sanitize_title(pathinfo($file['name'])['filename']),
+      'url' => $image_url,
     ));
 
     $image_resolution = getimagesize($file['tmp_name']);
@@ -143,13 +147,26 @@ class WP_Cloudflare_Images_Uploader
       'width' => $image_resolution[0],
       'height' => $image_resolution[1],
       'file' => wp_basename($file['name']),
-      'sizes' => $file['size'],
+      'sizes' => array(
+        'medium' => array(
+          'file' => $image_url . '/medium',
+          'width' => 300,
+          'height' => 300,
+        ),
+        'thumbnail' => array(
+          'file' => $image_url . '/thumbnail',
+          'width' => 150,
+          'height' => 150,
+        ),
+      ),
       'image_meta' => array(
         'id' => $result_decode['id']
       )
     );
 
-    $image_size = array('full', $attachment_metadata);
+    $image_size = array(
+      $attachment_metadata,
+    );
     $attachment_metadata['sizes'] = $image_size;
 
     wp_update_attachment_metadata($attachment_id, $attachment_metadata);
@@ -181,7 +198,7 @@ class WP_Cloudflare_Images_Uploader
         'id' => $attachment_id,
         'title' => sanitize_title(pathinfo($file['name'])['filename']),
         'filename' => wp_basename($file['name']),
-        'url' => $result_decode['variants'][0],
+        'url' => $image_url . '/large',
         'alt' => '',
         'author' => get_current_user_id(),
         'description' => '',
@@ -208,10 +225,29 @@ class WP_Cloudflare_Images_Uploader
           'item' => '',
           'meta' => ''
         ),
-        'sizes' => $image_size,
+        'sizes' => array(
+          'full' => array(
+            'url' => $image_url . '/large',
+            'width' => $image_resolution[0],
+            'height' => $image_resolution[1],
+            'orientation' => $image_resolution[0] > $image_resolution[1] ? 'landscape' : 'portrait'
+          ),
+          'medium' => array(
+            'url' => $image_url . '/medium',
+            'width' => 300,
+            'height' => 300,
+            'orientation' => $image_resolution[0] > $image_resolution[1] ? 'landscape' : 'portrait'
+          ),
+          'thumbnail' => array(
+            'url' => $image_url . '/thumbnail',
+            'width' => 150,
+            'height' => 150,
+            'orientation' => $image_resolution[0] > $image_resolution[1] ? 'landscape' : 'portrait'
+          ),
+        ),
         'width' => $image_resolution[0],
         'height' => $image_resolution[1],
-        'orientation' => 'landscape',
+        'orientation' => $image_resolution[0] > $image_resolution[1] ? 'landscape' : 'portrait',
       )
     ));
   }
