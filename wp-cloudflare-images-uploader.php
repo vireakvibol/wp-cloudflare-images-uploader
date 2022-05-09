@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin Name: WP Cloudflare Images Uploader
+ * Plugin Name: Cloudflare Images Uploader
  * Plugin URI: https://github.com/softlibrary/wc-cloudflare-images-uploader
  * Description: Upload your media direct to Cloudflare Images
  * Version: 0.1.0
